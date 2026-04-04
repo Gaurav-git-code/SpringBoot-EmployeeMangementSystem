@@ -1,7 +1,5 @@
 package com.darknightcoder.ems.service.impl;
 
-import static com.darknightcoder.ems.mapper.EmployeeMapper.*;
-
 import com.darknightcoder.ems.entity.Department;
 import com.darknightcoder.ems.entity.Employee;
 import com.darknightcoder.ems.exception.ResourceNotFoundException;
@@ -17,12 +15,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.darknightcoder.ems.mapper.EmployeeMapper.mapToEmployee;
+import static com.darknightcoder.ems.mapper.EmployeeMapper.mapToEmployeeDto;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class EmployeeServiceImpl implements EmployeeService {
 
     private EmployeeRepository employeeRepository;
@@ -30,10 +32,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
-    public EmployeeDto createEmployee(EmployeeDto employeeDto, long departmentId) {
-        Department department = departmentRepository.findById(departmentId).orElse(null);
+    @Transactional
+    public EmployeeDto createEmployee(EmployeeDto employeeDto) {
+        Department department = departmentRepository.findById(employeeDto.getDepartmentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Department","Id",employeeDto.getDepartmentId()));
         Employee savedEmployee = employeeRepository.save(mapToEmployee(employeeDto, department));
-        return maptoEmployeeDto(savedEmployee);
+        return mapToEmployeeDto(savedEmployee);
     }
 
     @Override
@@ -42,12 +46,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Department","Id",departmentId));
         Employee fetchedEmployee =employeeRepository.findById(employeeId).orElseThrow(
                 () -> new ResourceNotFoundException("Employee","Id",employeeId));
-        return maptoEmployeeDto(fetchedEmployee);
+        return mapToEmployeeDto(fetchedEmployee);
     }
 
     @Override
-    public EmployeeResponse getAllEmployee(long departmentId, int pageNo, int pageSize, String sortBy, String sortDir) {
-    Department department = departmentRepository.findById(departmentId)
+    public EmployeeResponse getAllEmployee(
+            long departmentId, int pageNo, int pageSize, String sortBy, String sortDir) {
+        Department department = departmentRepository.findById(departmentId)
         .orElseThrow(() -> new ResourceNotFoundException("Department","Id",departmentId));
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())? Sort.by(sortBy).ascending() :
                 Sort.by(sortBy).descending();
@@ -57,8 +62,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         EmployeeResponse employeeResponse = new EmployeeResponse();
 
 
-        List<EmployeeDto> employeeDtoList = employeeList.stream().map(EmployeeMapper::maptoEmployeeDto)
-                                        .collect(Collectors.toList());
+        List<EmployeeDto> employeeDtoList = employeeList
+                .stream()
+                    .map(EmployeeMapper::mapToEmployeeDto)
+                        .toList();
         employeeResponse.setContent(employeeDtoList);
         employeeResponse.setPageNo(page.getNumber());
         employeeResponse.setPageSize(page.getSize());
@@ -69,19 +76,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public EmployeeDto updateEmployee(long departmentId, long employeeId,EmployeeDto employeeDto) {
-        Department department = departmentRepository.findById(departmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Department","Id",departmentId));
+    @Transactional
+    public EmployeeDto updateEmployee(long employeeId,EmployeeDto employeeDto) {
+        Department department = departmentRepository.findById(employeeDto.getDepartmentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Department","Id",employeeDto.getDepartmentId()));
         Employee savedEmployee = employeeRepository.findById(employeeId).orElseThrow(
                 () -> new ResourceNotFoundException("Employee","Id",employeeId));
         savedEmployee.setFirstName(employeeDto.getFirstName());
         savedEmployee.setLastName(employeeDto.getLastName());
         savedEmployee.setEmail(employeeDto.getEmail());
+        savedEmployee.setDepartment(department);
         Employee updatedEmployee = employeeRepository.save(savedEmployee);
-        return maptoEmployeeDto(updatedEmployee);
+        return mapToEmployeeDto(updatedEmployee);
     }
 
     @Override
+    @Transactional
     public void deleteEmployee(long departmentId, long employeeId) {
         departmentRepository.findById(departmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Department","Id",departmentId));

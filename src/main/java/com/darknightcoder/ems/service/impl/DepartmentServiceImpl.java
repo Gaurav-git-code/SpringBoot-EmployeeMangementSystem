@@ -1,7 +1,5 @@
 package com.darknightcoder.ems.service.impl;
 
-import static com.darknightcoder.ems.mapper.DepartmentMapper.*;
-
 import com.darknightcoder.ems.entity.Department;
 import com.darknightcoder.ems.entity.Employee;
 import com.darknightcoder.ems.exception.DeleteResourceException;
@@ -21,18 +19,23 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.darknightcoder.ems.mapper.DepartmentMapper.mapToDepartment;
+import static com.darknightcoder.ems.mapper.DepartmentMapper.mapToDepartmentDto;
 
 @AllArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class DepartmentServiceImpl implements DepartmentService {
 
     private DepartmentRepository departmentRepository;
     private EmployeeRepository employeeRepository;
 
     @Override
+    @Transactional
     public DepartmentDto createDepartment(DepartmentDto departmentDto) {
         return mapToDepartmentDto(departmentRepository.save(mapToDepartment(departmentDto)));
     }
@@ -47,8 +50,11 @@ public class DepartmentServiceImpl implements DepartmentService {
         Page<Department> page = departmentRepository.findAll(pageable);
         List<Department> listOfDepartment = page.getContent();
 
-        List<DepartmentDto> listDepartment = listOfDepartment.stream().map((DepartmentMapper::mapToDepartmentDto))
-                .collect(Collectors.toList());
+        List<DepartmentDto> listDepartment = listOfDepartment.
+                stream()
+                .map((DepartmentMapper::mapToDepartmentDto))
+                .toList();
+
         return new DepartmentResponse(
                 listDepartment,
                 page.getNumber(),
@@ -81,8 +87,8 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<EmployeeDto> employeeDtoList = page
                 .getContent()
                 .stream()
-                .map(EmployeeMapper::maptoEmployeeDto)
-                .collect(Collectors.toList());
+                .map(EmployeeMapper::mapToEmployeeDto)
+                .toList();
 
 
         return new DepartmentEmployeesDto(
@@ -99,6 +105,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public DepartmentDto updateDepartment(long id, DepartmentDto departmentDto) {
         Department savedDepartment = departmentRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Department","Id",id));
@@ -108,6 +115,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
+    @Transactional
     public void deleteDepartment(long departmentId) {
         Department departmentToDelete =departmentRepository.findById(departmentId)
                         .orElseThrow(() -> new ResourceNotFoundException("Department","Id",departmentId));

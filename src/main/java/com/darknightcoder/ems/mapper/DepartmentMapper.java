@@ -4,12 +4,12 @@ import com.darknightcoder.ems.entity.Department;
 import com.darknightcoder.ems.model.DepartmentDto;
 
 public class DepartmentMapper {
+    private DepartmentMapper(){}
     public static Department mapToDepartment(DepartmentDto departmentDto){
-        return new Department (
-                departmentDto.getDepartmentId(),
-                departmentDto.getDepartmentName(),
-                departmentDto.getDepartmentType()
-                );
+        Department department = new Department();
+        department.setDepartmentName(departmentDto.getDepartmentName());
+        department.setDepartmentType(departmentDto.getDepartmentType());
+        return department;
     }
 
     public static DepartmentDto mapToDepartmentDto(Department department){

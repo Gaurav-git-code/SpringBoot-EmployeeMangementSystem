@@ -6,7 +6,9 @@ import com.darknightcoder.ems.model.EmployeeDto;
 
 public class EmployeeMapper {
 
-    public static EmployeeDto maptoEmployeeDto(Employee employee){
+    private EmployeeMapper (){}
+
+    public static EmployeeDto mapToEmployeeDto(Employee employee){
         return new EmployeeDto(
                 employee.getId(),
                 employee.getFirstName(),
@@ -17,12 +19,11 @@ public class EmployeeMapper {
     }
 
     public static Employee mapToEmployee(EmployeeDto employeeDto, Department department){
-        return new Employee(
-                employeeDto.getId(),
-                employeeDto.getFirstName(),
-                employeeDto.getLastName(),
-                employeeDto.getEmail(),
-                department
-        );
+        Employee employee = new Employee();
+        employee.setFirstName(employeeDto.getFirstName());
+        employee.setLastName(employeeDto.getLastName());
+        employee.setEmail(employeeDto.getEmail());
+        employee.setDepartment(department);
+        return employee;
     }
 }

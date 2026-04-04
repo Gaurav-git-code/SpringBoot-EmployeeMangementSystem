@@ -5,15 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
-
-
 @Setter
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorDetails {
-    private Instant timeStamp;
-    private String errorMessage;
-    private String details;
+public class JwtResponse {
+    private String token;
+    private String tokenType = "Bearer";
 }
