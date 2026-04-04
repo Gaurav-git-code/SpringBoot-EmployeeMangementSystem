@@ -2,15 +2,13 @@ package com.darknightcoder.ems.model;
 
 
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class EmployeeDto {
     private long id;
     @NotBlank(message = "first Name cannot be empty!")

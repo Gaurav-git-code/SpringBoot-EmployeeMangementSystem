@@ -2,15 +2,13 @@ package com.darknightcoder.ems.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class DepartmentDto {
     private long departmentId;
     @NotBlank(message = "Department name cannot be empty!")

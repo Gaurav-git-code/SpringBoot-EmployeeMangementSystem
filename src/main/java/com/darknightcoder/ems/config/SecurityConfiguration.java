@@ -5,25 +5,19 @@ import com.darknightcoder.ems.security.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
-@Component
+@Configuration
 @AllArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfiguration {
@@ -50,20 +44,9 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/v1/auth/**").permitAll()
                         .anyRequest().authenticated())//this tell wt to authorize
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-                //.httpBasic(Customizer.withDefaults());// here we tell wt type of authentication to be done
         return httpSecurity.build();
     }
 
-    // will provide the User Details Service  as Authentication manager is called by Spring
-//    @Bean
-//    public InMemoryUserDetailsManager userDetails(){
-//        UserDetails userDetails = User.builder()
-//                .username("Gaurav")
-//                .password(passwordEncoder().encode("password"))
-//                .roles("ADMIN")
-//                .build();
-//        return new InMemoryUserDetailsManager(userDetails);
-//    }
 
     @Bean
     public AuthenticationProvider authenticationProvider(){
