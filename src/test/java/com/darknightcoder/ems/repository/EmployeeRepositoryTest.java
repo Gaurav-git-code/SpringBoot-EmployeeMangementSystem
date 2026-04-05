@@ -2,6 +2,7 @@ package com.darknightcoder.ems.repository;
 
 import com.darknightcoder.ems.entity.Department;
 import com.darknightcoder.ems.entity.Employee;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -21,14 +22,27 @@ class EmployeeRepositoryTest {
     @Autowired
     DepartmentRepository departmentRepository;
 
+    Department department;
+    Employee employee;
+
+    @BeforeEach
+    void setUp(){
+
+        employeeRepository.deleteAll();
+        departmentRepository.deleteAll();
+
+        department = new Department(null,"Research","B2B");
+        departmentRepository.save(department);
+        employee = new Employee(null, "gaurav","suman","gaurav@gmail.com",department);
+        employeeRepository.save(employee);
+
+    }
+
     //Junit test case for
     @Test
     public void givenDepartmentAndPageable_whenFindAllByDepartment_thenReturnPageOfEmployee(){
         //given - precondition or setup
-        Department department = new Department(null,"Research","B2B");
-        departmentRepository.save(department);
-        Employee employee = new Employee(null, "gaurav","suman","gaurav@gmail.com",department);
-        employeeRepository.save(employee);
+
         Pageable pageable = PageRequest.of(0,1, Sort.by("id").ascending());
         //Page<Employee> page = new PageImpl<>(List.of(employee),pageable,List.of(employee).size());
 
@@ -47,10 +61,7 @@ class EmployeeRepositoryTest {
     @Test
     public void givenDepartment_whenCountByDepartment_thenReturnCount(){
         //given - precondition or setup
-        Department department = new Department(null,"Research","B2B");
-        departmentRepository.save(department);
-        Employee employee = new Employee(null, "gaurav","suman","gaurav@gmail.com",department);
-        employeeRepository.save(employee);
+
         //when -action or behaviour which we are going to test
         int count = employeeRepository.countByDepartment(department);
 

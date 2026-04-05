@@ -8,6 +8,7 @@ import com.darknightcoder.ems.model.DepartmentResponse;
 import com.darknightcoder.ems.repository.DepartmentRepository;
 import com.darknightcoder.ems.repository.EmployeeRepository;
 import com.darknightcoder.ems.service.impl.DepartmentServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,17 +32,24 @@ class DepartmentServiceTest {
     @InjectMocks
     private DepartmentServiceImpl departmentService;
 
+    private Department savedDepartment;
+
+    @BeforeEach
+    void setUp(){
+        this.savedDepartment = new Department(1L, "Research","B2B");
+    }
+
     //Junit test case for create department
     @Test
     @DisplayName("Junit test case for create department")
     public void givenDepartment_whenCreateDepartment_thenReturnDepartmentDto(){
         //given - precondition or setup
         DepartmentDto departmentDto = DepartmentDto.builder()
-                .departmentId(1)
+                .departmentId(1L)
                 .departmentName("Research")
                 .departmentType("B2B")
                 .build();
-        Department savedDepartment = new Department(1L, "Research","B2B");
+        //this.savedDepartment = new Department(1L, "Research","B2B");
 
         BDDMockito.given(departmentRepository.save(ArgumentMatchers.any(Department.class)))
                 .willReturn(savedDepartment);
@@ -62,9 +70,9 @@ class DepartmentServiceTest {
     public void givenDepartmentList_whenGetAllDepartment_thenReturnDepartmentList(){
         //given - precondition or setup
 
-        Department savedDepartment = new Department(1L,"Research","B2B");
+
         List<Department> listOfDepartment = List.of(savedDepartment);
-        Pageable pageable =PageRequest.of(0,1,Sort.by("departmentName"));
+        Pageable pageable =PageRequest.of(0,1,Sort.by("departmentName").ascending());
         Page<Department> depatmentPage = new PageImpl<>(listOfDepartment,pageable,listOfDepartment.size());
 
         //when -action or behaviour which we are going to test
@@ -90,10 +98,10 @@ class DepartmentServiceTest {
     @DisplayName("Junit test case for fetching department by id")
     public void givenDepartment_whenGetDepartmentById_thenReturnDepartment(){
         //given - precondition or setup
-        Department department = new Department(1L, "Research","B2B");
+
         //when -action or behaviour which we are going to test
         BDDMockito.given(departmentRepository.findById(ArgumentMatchers.eq(1L)))
-                .willReturn(Optional.of(department));
+                .willReturn(Optional.of(savedDepartment));
         DepartmentDto departmentDto = departmentService.getDepartmentById(1L);
         //then - verify the output
         assertThat(departmentDto).isNotNull();
@@ -107,13 +115,13 @@ class DepartmentServiceTest {
     public void givenDepartment_whenGetAllEmployeeForDepartment_thenReturnEmployeePaginated(){
         //given - precondition or setup
 
-        Department department = new Department(1L, "Research","B2B");
-        Employee employee = new Employee(1L, "Gaurav", "Suman","gaurav@gmail.com",department);
-        Pageable pageable = PageRequest.of(0,1,Sort.by("departmentName"));
+
+        Employee employee = new Employee(1L, "Gaurav", "Suman","gaurav@gmail.com",savedDepartment);
+        Pageable pageable = PageRequest.of(0,1,Sort.by("departmentName").ascending());
         Page<Employee> page = new PageImpl<>(List.of(employee),pageable,List.of(employee).size());
         BDDMockito.given(departmentRepository.findById(ArgumentMatchers.eq(1L)))
-                .willReturn(Optional.of(department));
-        BDDMockito.given(employeeRepository.findAllByDepartment(department,pageable))
+                .willReturn(Optional.of(savedDepartment));
+        BDDMockito.given(employeeRepository.findAllByDepartment(savedDepartment,pageable))
                 .willReturn(page);
 
         //when -action or behaviour which we are going to test
@@ -143,18 +151,18 @@ class DepartmentServiceTest {
         //given - precondition or setup
         DepartmentDto departmentDto = DepartmentDto.builder()
                 .departmentId(1)
-                .departmentName("Research")
-                .departmentType("B2B")
+                .departmentName("Finance")
+                .departmentType("B2C")
                 .build();
 
 
-        Department department = new Department(1L, "Research","B2B");
-        Department updatedDepartment = new Department(1L, "Finance","B2C");
         //when -action or behaviour which we are going to test
         BDDMockito.given(departmentRepository.findById(1L))
-                        .willReturn(Optional.of(department));
+                        .willReturn(Optional.of(savedDepartment));
+        savedDepartment.setDepartmentName("Finance");
+        savedDepartment.setDepartmentType("B2C");
         BDDMockito.given(departmentRepository.save(ArgumentMatchers.any()))
-                .willReturn(updatedDepartment);
+                .willReturn(savedDepartment);
         DepartmentDto updatedDepartmentDto = departmentService.updateDepartment(1L,departmentDto);
         //then - verify the output
         assertThat(updatedDepartmentDto).isNotNull();
@@ -168,9 +176,10 @@ class DepartmentServiceTest {
     @DisplayName("Junit test case for deleting department")
     public void givenDepartment_whenDeleteDepartment_thenReturnNothing(){
         //given - precondition or setup
-        Department department = new Department(1L, "Research","B2B");
         //when -action or behaviour which we are going to test
-        BDDMockito.given(departmentRepository.findById(1L)).willReturn(Optional.of(department));
+        BDDMockito.given(departmentRepository.findById(1L)).willReturn(Optional.of(savedDepartment));
+        BDDMockito.given(employeeRepository.countByDepartment(savedDepartment))
+                        .willReturn(0);
         BDDMockito.willDoNothing().given(departmentRepository).deleteById(1L);
         departmentService.deleteDepartment(1L);
         //then - verify the output

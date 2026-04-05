@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: ems-postgres
+    environment:
+      POSTGRES_DB: ems
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+    - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data #persist the data between container restarts
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U postgres -d ems"]
+      interval: 10s     #retry after every 10 sec
+      timeout: 5s       #fail retry in 5 sec
+      retries: 5        # do 5 retry
+#Spring boot application service
+  app:
+    build: .
+    container_name: ems-app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/ems
+      DB_USER: postgres
+      DB_PASSWORD: admin
+      JWT_SECRET: thisIsJwtKeyToGenerateTheTokenThisShouldBeMoreThen32Characters
+      JWT_EXPIRY: 3600000
+      SHOW_SQL: false
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  postgres_data:
+
+
+
+
+
