@@ -11,21 +11,16 @@
 	<groupId>com.darknightcoder</groupId>
 	<artifactId>EmployeeManagementSystem</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name/>
-	<description/>
-	<url/>
-	<licenses>
-		<license/>
-	</licenses>
+    <name>EMS App</name>
+    <description>The application Built for spring Rest, security, testing,JPA and docker implementation</description>
+    <url>https://github.com/Gaurav-git-code/SpringBoot-EmployeeMangementSystem</url>
 	<developers>
-		<developer/>
+		<developer>
+            <id>Gaurav</id>
+            <name>Gaurav Suman</name>
+            <email>gauravsuman2018@gmail.com</email>
+        </developer>
 	</developers>
-	<scm>
-		<connection/>
-		<developerConnection/>
-		<tag/>
-		<url/>
-	</scm>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

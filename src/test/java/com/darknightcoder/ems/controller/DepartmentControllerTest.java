@@ -146,7 +146,8 @@ class DepartmentControllerTest {
                 .andExpect(MockMvcResultMatchers
                         .jsonPath("$.departmentName",CoreMatchers.is("Research")))
                 .andExpect(MockMvcResultMatchers
-                        .jsonPath("$.departmentType",CoreMatchers.is("B2B")));
+                        .jsonPath("$.departmentType",CoreMatchers.is("B2B")))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     //Junit test case for get all employee for department
@@ -209,7 +210,8 @@ class DepartmentControllerTest {
                 .andExpect(MockMvcResultMatchers
                         .jsonPath("$.totalPages",CoreMatchers.is(1)))
                 .andExpect(MockMvcResultMatchers
-                        .jsonPath("$.last",CoreMatchers.is(true)));
+                        .jsonPath("$.last",CoreMatchers.is(true)))
+                .andExpect(MockMvcResultMatchers.status().isOk());
 
     }
 
@@ -241,7 +243,8 @@ class DepartmentControllerTest {
                 .andExpect(MockMvcResultMatchers
                         .jsonPath("$.departmentName",CoreMatchers.is("Finance")))
                 .andExpect(MockMvcResultMatchers
-                        .jsonPath("$.departmentType", CoreMatchers.is("B2C")));
+                        .jsonPath("$.departmentType", CoreMatchers.is("B2C")))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     //Junit test case for delete department

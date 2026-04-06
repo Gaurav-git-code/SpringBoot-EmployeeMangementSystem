@@ -28,13 +28,10 @@ class EmployeeRepositoryTest {
     @BeforeEach
     void setUp(){
 
-        employeeRepository.deleteAll();
-        departmentRepository.deleteAll();
-
         department = new Department(null,"Research","B2B");
-        departmentRepository.save(department);
+        department = departmentRepository.save(department);
         employee = new Employee(null, "gaurav","suman","gaurav@gmail.com",department);
-        employeeRepository.save(employee);
+        employee = employeeRepository.save(employee);
 
     }
 

@@ -121,7 +121,8 @@ class DepartmentServiceTest {
         Page<Employee> page = new PageImpl<>(List.of(employee),pageable,List.of(employee).size());
         BDDMockito.given(departmentRepository.findById(ArgumentMatchers.eq(1L)))
                 .willReturn(Optional.of(savedDepartment));
-        BDDMockito.given(employeeRepository.findAllByDepartment(savedDepartment,pageable))
+        BDDMockito.given(employeeRepository.findAllByDepartment(ArgumentMatchers.eq(savedDepartment),
+                        ArgumentMatchers.any(Pageable.class)))
                 .willReturn(page);
 
         //when -action or behaviour which we are going to test
