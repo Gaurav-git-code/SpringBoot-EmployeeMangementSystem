@@ -34,7 +34,8 @@ jobs:
         with:
           path: ~/.m2
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
+          restore-keys: |
+            ${{ runner.os }}-maven-
       - name: maven test
         env:
           DB_URL: jdbc:postgresql://localhost:5432/ems_db
@@ -59,9 +60,9 @@ jobs:
       - name: build docker image
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME}}/ems:latest \
-          docker build -t ${{ secrets.DOCKER_USERNAME}}/ems:${{ github.sha }} .
+                       -t ${{ secrets.DOCKER_USERNAME}}/ems:${{ github.sha }} .
 
       - name: push to docker hub
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/ems:latest
-          docker push ${{ secrets.DOCKER_PASSWORD }}/ems:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/ems:${{ github.sha }}
