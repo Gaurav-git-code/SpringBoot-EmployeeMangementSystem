@@ -20,7 +20,7 @@ jobs:
         --health-cmd pg_isready
         --health-interval 10s
         --health-timeout 5s
-        --health-retry 5
+        --health-retries 5
    steps:
       - name: checkout github repo
         uses: actions/checkout@v4
