@@ -1,0 +1,44 @@
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+jobs:
+  builds:
+   runs-on: ubuntu-latest
+   services:
+     postgres:
+      image: postgres:15
+      env:
+        POSTGRES_DB: ems_db
+        POSTGRES_USER: ${{ secrets.DB_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      ports:
+        - 5432:5432
+      options: >-
+        --health-cmd pg_isready
+        --health-interval 10s
+        --health-timeout 5s
+        --health-retry 5
+   steps:
+      - name: checkout github repo
+        uses: actions/checkout@v4
+      - name: setup java 17
+        uses: actions/setup-java@v4
+        with:
+         java-version: '17'
+         distribution: 'temurin'
+      - name: cache the maven dependency
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+      - name: maven test
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/ems_db
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          JWT_SECRET: ${{ secrets.JWT }}
+        run: mvn verify
